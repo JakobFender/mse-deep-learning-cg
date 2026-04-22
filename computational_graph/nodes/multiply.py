@@ -14,18 +14,18 @@ class MultiplyNode(MetaNode):
         _received_count (int): Number of parent values received in the current pass.
     """
 
-    def __init__(self, x1: ValueNode, x2: ValueNode, out: ValueNode):
+    def __init__(self, in1: ValueNode, in2: ValueNode, out: ValueNode):
         """Create a multiplication operator node and wire up connections.
 
         Args:
-            x1 (ValueNode): First multiplicand node.
-            x2 (ValueNode): Second multiplicand node.
+            in1 (ValueNode): First multiplicand node.
+            in2 (ValueNode): Second multiplicand node.
             out (ValueNode): Output node that receives ``x1 * x2``.
         """
         super().__init__()
         # parents[0] is always x1, parents[1] is always x2
-        x1.connect_to(self)
-        x2.connect_to(self)
+        in1.connect_to(self)
+        in2.connect_to(self)
         self.connect_to(out)
         self._received_count = 0
 
@@ -81,4 +81,4 @@ class MultiplyNode(MetaNode):
         self.parents[1].backward(grad_z * x1_val)
 
     def __repr__(self) -> str:
-        return f"MultiplyNode(x1={self.parents[0].name}, x2={self.parents[1].name}, out={self.children[0].name})"
+        return f"MultiplyNode(in1={self.parents[0].name}, in2={self.parents[1].name}, out={self.children[0].name})"
