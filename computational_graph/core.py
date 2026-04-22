@@ -57,9 +57,7 @@ class CompGraph:
                 of input nodes.
         """
         if len(input_values) != len(self.in_nodes):
-            raise Exception(
-                "Can't forward: number of input differs to number of input nodes"
-            )
+            raise Exception("Can't forward: number of input differs to number of input nodes")
         for i, in_node in enumerate(self.in_nodes):
             in_node.receive_parent_value(input_values[i])
             in_node.forward()
@@ -85,3 +83,23 @@ class CompGraph:
         for node in self.in_nodes:
             node.reset_values()
         self.forwarded = False
+
+    def __repr__(self) -> str:
+        lines = []
+        visited = set()
+
+        def visit(node, prefix="", is_last=True):
+            if id(node) in visited:
+                return
+            visited.add(id(node))
+
+            connector = "+- "
+            lines.append(prefix + connector + repr(node))
+            child_prefix = prefix + ("   " if is_last else "|   ")
+            for i, child in enumerate(node.children):
+                visit(child, child_prefix, i == len(node.children) - 1)
+
+        for i, node in enumerate(self.in_nodes):
+            visit(node, "", i == len(self.in_nodes) - 1)
+
+        return "\n".join(lines)
