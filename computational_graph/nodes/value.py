@@ -1,17 +1,25 @@
 from __future__ import annotations
+
 from typing import Optional
 
 from .meta import MetaNode
 
 
 class ValueNode(MetaNode):
-    """A node that stores scalar values and propagated gradients."""
+    """A node that stores a scalar value and its accumulated gradient.
+
+    Attributes:
+        v (float | None): The scalar value held by this node. ``None`` until set.
+        grad_v (float | None): Accumulated gradient. ``None`` until a backward
+            pass contributes at least one gradient.
+    """
 
     def __init__(self, v: Optional[float] = None):
         """Create a value node.
 
         Args:
-            v: Optional initial value. If provided, the node starts as ready.
+            v (float, optional): Initial scalar value. When provided, ``input_ready``
+                is set to ``True`` immediately.
         """
         super().__init__()
         self.v: Optional[float] = None
@@ -20,42 +28,51 @@ class ValueNode(MetaNode):
             self.v = v
             self.input_ready = True
 
-    def receive_parent_value(self, v):
-        """Store incoming value and mark this node ready."""
+    def receive_parent_value(self, v: float):
+        """Store an incoming value from a parent node and mark this node ready.
+
+        Args:
+            v (float): The scalar value forwarded by the upstream parent.
+        """
         self.v = v
         self.input_ready = True
 
-    def set_grad_value(self, grad_v):
-        """Set gradient explicitly.
+    def set_grad_value(self, grad_v: float):
+        """Overwrite the gradient directly.
 
-        This is mainly a helper for manual experiments/tests.
+        This is mainly a helper for manual experiments and tests.
+
+        Args:
+            grad_v (float): The gradient value to store.
         """
         self.grad_v = grad_v
 
     def _reset_local(self):
+        """Clear the stored value, gradient, and readiness flag."""
         self.v = None
         self.grad_v = None
         self.input_ready = False
 
     def forward(self):
-        """Forward stored value to all children.
+        """Forward the stored value to all children.
 
         Raises:
-            Exception: If value is missing when forward is requested.
+            Exception: If ``v`` is ``None`` when ``forward`` is called.
         """
         if self.v is None:
-            raise Exception(
-                "Forward not possible as no value set in this ValueNode"
-            )
+            raise Exception("Forward not possible as no value set in this ValueNode")
         for node in self.children:
             node.receive_parent_value(self.v)
             node.forward()
 
-    def backward(self, grad_z):
-        """Accumulate gradient and pass it to parents.
+    def backward(self, grad_z: float):
+        """Accumulate an incoming gradient and propagate it to all parents.
 
-        A ``ValueNode`` can receive multiple downstream contributions;
-        those are summed in ``grad_v``.
+        A ``ValueNode`` may receive gradient contributions from multiple
+        downstream nodes; these are summed into ``grad_v``.
+
+        Args:
+            grad_z (float): Gradient of the loss with respect to this node's value.
         """
         if self.grad_v is None:
             self.grad_v = grad_z

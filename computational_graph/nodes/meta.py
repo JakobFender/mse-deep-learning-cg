@@ -6,9 +6,10 @@ from abc import ABC, abstractmethod
 class MetaNode(ABC):
     """Base abstraction for all graph nodes.
 
-    A node keeps references to upstream ``parents`` and downstream
-    ``children``. Implementations are responsible for tracking when inputs
-    are ready (``input_ready``) and for propagating values/gradients.
+    Attributes:
+        parents (list[MetaNode]): Upstream nodes that feed values into this node.
+        children (list[MetaNode]): Downstream nodes that receive values from this node.
+        input_ready (bool): Whether all required inputs have been received.
     """
 
     def __init__(self):
@@ -17,26 +18,36 @@ class MetaNode(ABC):
         self.input_ready: bool = False
 
     def add_child(self, node: MetaNode):
-        """Register a downstream child node.
+        """Register a downstream child node (one-directional).
 
-        This helper only updates the current node and does not update
-        ``node.parents``. Prefer ``connect_to`` for bidirectional linking.
+        Note:
+            Does not update ``node.parents``. Prefer ``connect_to`` for
+            bidirectional linking.
+
+        Args:
+            node (MetaNode): The child node to register.
         """
         self.children.append(node)
 
     def add_parent(self, node: MetaNode):
-        """Register an upstream parent node.
+        """Register an upstream parent node (one-directional).
 
-        This helper only updates the current node and does not update
-        ``node.children``. Prefer ``connect_to`` for bidirectional linking.
+        Note:
+            Does not update ``node.children``. Prefer ``connect_to`` for
+            bidirectional linking.
+
+        Args:
+            node (MetaNode): The parent node to register.
         """
         self.parents.append(node)
 
     def connect_to(self, node: MetaNode):
-        """Connect this node to another node.
+        """Connect this node to a downstream node (bidirectional).
 
-        The connection is created in both directions:
-        ``self -> node`` and ``node <- self``.
+        Appends ``node`` to ``self.children`` and ``self`` to ``node.parents``.
+
+        Args:
+            node (MetaNode): The downstream node to connect to.
         """
         self.children.append(node)
         node.parents.append(self)
@@ -48,21 +59,33 @@ class MetaNode(ABC):
 
     @abstractmethod
     def _reset_local(self):
-        """Clear node-local cached state for a new pass."""
+        """Clear node-local cached state in preparation for a new pass."""
         pass
 
     def reset_values(self):
-        """Clear cached forward/backward state and recursively reset descendants."""
+        """Clear cached state and recursively reset all descendants.
+
+        Calls ``_reset_local`` on this node, then calls ``reset_values``
+        on each child in order.
+        """
         self._reset_local()
         for node in self.children:
             node.reset_values()
 
     @abstractmethod
-    def backward(self, grad_z):
-        """Propagate gradient from downstream to upstream parents."""
+    def backward(self, grad_z: float):
+        """Propagate gradient from a downstream node to upstream parents.
+
+        Args:
+            grad_z (float): Gradient of the loss with respect to this node's output.
+        """
         pass
 
     @abstractmethod
-    def receive_parent_value(self, v):
-        """Receive one upstream value from a parent node."""
+    def receive_parent_value(self, v: float):
+        """Receive one upstream value from a parent node.
+
+        Args:
+            v (float): The value passed down from a parent node.
+        """
         pass

@@ -7,17 +7,20 @@ from .value import ValueNode
 class MultiplyNode(MetaNode):
     """A binary multiplication node: z = x1 * x2.
 
-    Semantic role-based: x1 and x2 roles are explicit at
-    construction, making gradient flow deterministic and unambiguous.
+    Parent roles are fixed at construction (``parents[0]`` is always x1,
+    ``parents[1]`` is always x2), making gradient flow deterministic.
+
+    Attributes:
+        _received_count (int): Number of parent values received in the current pass.
     """
 
     def __init__(self, x1: ValueNode, x2: ValueNode, out: ValueNode):
-        """Create a multiplication operator node.
+        """Create a multiplication operator node and wire up connections.
 
         Args:
-            x1: First multiplicand node.
-            x2: Second multiplicand node.
-            out: Output node receiving ``x1 * x2``.
+            x1 (ValueNode): First multiplicand node.
+            x2 (ValueNode): Second multiplicand node.
+            out (ValueNode): Output node that receives ``x1 * x2``.
         """
         super().__init__()
         # parents[0] is always x1, parents[1] is always x2
@@ -27,30 +30,39 @@ class MultiplyNode(MetaNode):
         self._received_count = 0
 
     def get_parent_values(self) -> tuple[float, float]:
-        """Return parent values in the fixed ``(x1, x2)`` order."""
+        """Return the current values of both parent nodes.
+
+        Returns:
+            tuple[float, float]: ``(x1, x2)`` values in construction order.
+        """
         return self.parents[0].v, self.parents[1].v
 
     def receive_parent_value(self, v: float):
-        """Record input arrival from a parent.
+        """Record that one parent has sent its value.
 
-        The scalar itself is not stored here because it is read from parent
-        nodes during forward/backward; only readiness state is tracked.
+        The value itself is not stored here; it is read directly from
+        ``parents[].v`` during ``forward`` and ``backward``.
+
+        Args:
+            v (float): Value forwarded by the calling parent (ignored locally).
+
+        Raises:
+            Exception: If both inputs have already been received.
         """
         del v  # value is read from parents[].v in forward/backward
         if self._received_count >= 2:
-            raise Exception(
-                "This node accepts 2 inputs that are already filled"
-            )
+            raise Exception("This node accepts 2 inputs that are already filled")
         self._received_count += 1
         if self._received_count == 2:
             self.input_ready = True
 
     def _reset_local(self):
+        """Reset the received-input counter and readiness flag."""
         self._received_count = 0
         self.input_ready = False
 
     def forward(self):
-        """Compute product and push to children once both inputs are ready."""
+        """Compute the product and push it to children once both inputs are ready."""
         if self.input_ready:
             x1_val, x2_val = self.get_parent_values()
             z = x1_val * x2_val
@@ -58,8 +70,12 @@ class MultiplyNode(MetaNode):
                 node.receive_parent_value(z)
                 node.forward()
 
-    def backward(self, grad_z):
-        """Apply product rule and route gradients to both parents."""
+    def backward(self, grad_z: float):
+        """Apply the product rule and route gradients to both parent nodes.
+
+        Args:
+            grad_z (float): Gradient of the loss with respect to this node's output.
+        """
         x1_val, x2_val = self.get_parent_values()
         self.parents[0].backward(grad_z * x2_val)
         self.parents[1].backward(grad_z * x1_val)

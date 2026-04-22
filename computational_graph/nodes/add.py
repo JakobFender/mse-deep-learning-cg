@@ -5,14 +5,18 @@ from .value import ValueNode
 
 
 class AddNode(MetaNode):
-    """A variadic addition node: z = sum(x_i)."""
+    """An addition node that accepts a variable number of arguments: z = sum(x_i).
+
+    Attributes:
+        inputs (list[float]): Values received from parent nodes in the current pass.
+    """
 
     def __init__(self, in_nodes: list[ValueNode], out_node: ValueNode):
         """Create an addition operator with an arbitrary number of inputs.
 
         Args:
-            in_nodes: List of input addend nodes.
-            out_node: Output node receiving the sum.
+            in_nodes (list[ValueNode]): Input addend nodes.
+            out_node (ValueNode): Output node that receives the sum.
         """
         super().__init__()
         for node in in_nodes:
@@ -21,27 +25,42 @@ class AddNode(MetaNode):
         self.inputs: list[float] = []
 
     def receive_parent_value(self, v: float):
-        """Append one addend and mark ready when all addends are present."""
+        """Append one addend and mark the node ready when all inputs have arrived.
+
+        Args:
+            v (float): Scalar value forwarded by a parent node.
+
+        Raises:
+            Exception: If more values are received than there are parent nodes.
+        """
         self.inputs.append(v)
         if len(self.inputs) == len(self.parents):
             self.input_ready = True
         elif len(self.inputs) > len(self.parents):
-            raise Exception('All inputs are already set')
+            raise Exception("All inputs are already set")
 
     def _reset_local(self):
+        """Clear the collected input values and readiness flag."""
         self.inputs = []
         self.input_ready = False
 
     def forward(self):
-        """Compute sum of inputs and push result to children."""
+        """Compute the sum of all inputs and push the result to children."""
         if self.input_ready:
             s = sum(self.inputs)
             for node in self.children:
                 node.receive_parent_value(s)
                 node.forward()
 
-    def backward(self, grad_z):
-        """Distribute same upstream gradient to all addends."""
+    def backward(self, grad_z: float):
+        """Distribute the upstream gradient equally to all parent nodes.
+
+        The gradient of a sum with respect to each addend is 1, so ``grad_z``
+        is passed unchanged to every parent.
+
+        Args:
+            grad_z (float): Gradient of the loss with respect to this node's output.
+        """
         grad_x = 1.0 * grad_z
         for node in self.parents:
             node.backward(grad_x)
