@@ -88,18 +88,32 @@ class CompGraph:
         lines = []
         visited = set()
 
-        def visit(node, prefix="", is_last=True):
+        def visit(node):
             if id(node) in visited:
                 return
             visited.add(id(node))
 
-            connector = "+- "
-            lines.append(prefix + connector + repr(node))
-            child_prefix = prefix + ("   " if is_last else "|   ")
+            lines.append(str(node))
             for i, child in enumerate(node.children):
-                visit(child, child_prefix, i == len(node.children) - 1)
+                visit(child)
 
-        for i, node in enumerate(self.in_nodes):
-            visit(node, "", i == len(self.in_nodes) - 1)
+        lines.append(" --- Input Nodes --- ")
+        for input_node in self.in_nodes:
+            lines.append(str(input_node))
+            visited.add(id(input_node))
+        lines.append("")
+
+        for output_node in self.out_nodes:
+            visited.add(id(output_node))
+
+        lines.append(" --- Intermediate Notes --- ")
+        for node in self.in_nodes:
+            for child in node.children:
+                visit(child)
+        lines.append("")
+
+        lines.append(" --- Output Notes --- ")
+        for output_node in self.out_nodes:
+            lines.append(str(output_node))
 
         return "\n".join(lines)
