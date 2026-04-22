@@ -115,5 +115,6 @@ class CompGraph:
         lines.append(" --- Output Notes --- ")
         for output_node in self.out_nodes:
             lines.append(str(output_node))
+        lines.append("")
 
         return "\n".join(lines)
