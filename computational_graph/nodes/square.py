@@ -58,6 +58,9 @@ class SquareNode(MetaNode):
         for node in self.parents:
             node.backward(grad_x)
 
+    def __repr__(self) -> str:
+        return f"SquareNode(in={self.parents[0].name}, out={self.children[0].name})"
+
 
 # ######  TO DO  #########
 # class MSELossNode(MetaNode):
