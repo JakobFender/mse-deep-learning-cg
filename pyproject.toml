@@ -21,7 +21,7 @@ where = ["."]
 include = ["computational_graph*"]
 
 [tool.ruff]
-line-length = 88
+line-length = 120
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
