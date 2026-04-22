@@ -64,3 +64,7 @@ class AddNode(MetaNode):
         grad_x = 1.0 * grad_z
         for node in self.parents:
             node.backward(grad_x)
+
+    def __repr__(self) -> str:
+        arguments = [f"x{i}={p.name}" for i, p in enumerate(self.parents)]
+        return f"AddNode({', '.join(arguments)}, out={self.children[0].name})"
