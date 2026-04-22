@@ -2,6 +2,7 @@
 .idea
 .vscode
 .claude
+CLAUDE.md
 
 # Setup and builds
 *.egg-info/
