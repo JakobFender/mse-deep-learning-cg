@@ -11,28 +11,29 @@ def make_add(*values):
     return in_nodes, add, out
 
 
-def test_forward_two_inputs():
-    ins, add, out = make_add(2.0, 3.0)
-    for node in ins:
-        node.forward()
-    assert out.v == 5.0
+class TestForward:
+    def test_two_inputs(self):
+        ins, add, out = make_add(2.0, 3.0)
+        for node in ins:
+            node.forward()
+        assert out.v == 5.0
 
 
-def test_forward_three_inputs():
-    ins, add, out = make_add(1.0, 2.0, 3.0)
-    for node in ins:
-        node.forward()
-    assert out.v == 6.0
+    def test_three_inputs(self):
+        ins, add, out = make_add(1.0, 2.0, 3.0)
+        for node in ins:
+            node.forward()
+        assert out.v == 6.0
 
 
-def test_forward_not_triggered_until_all_inputs():
-    ins, add, out = make_add(1.0, 2.0, 3.0)
-    ins[0].forward()
-    assert out.v is None
-    ins[1].forward()
-    assert out.v is None
-    ins[2].forward()
-    assert out.v == 6.0
+    def test_not_triggered_until_all_inputs(self):
+        ins, add, out = make_add(1.0, 2.0, 3.0)
+        ins[0].forward()
+        assert out.v is None
+        ins[1].forward()
+        assert out.v is None
+        ins[2].forward()
+        assert out.v == 6.0
 
 
 def test_backward_distributes_grad():

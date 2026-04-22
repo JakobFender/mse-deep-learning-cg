@@ -53,60 +53,53 @@ def test_validate_rejects_non_value_node_output():
         CompGraph([x1, x2], [mul])
 
 
-# ---------------------------------------------------------------------------
-# forward
-# ---------------------------------------------------------------------------
+class TestForward:
+    def test_multiply(self):
+        g, x1, x2, out = make_multiply_graph()
+        g.forward([3.0, 4.0])
+        assert out.v == 12.0
 
-def test_forward_multiply():
-    g, x1, x2, out = make_multiply_graph()
-    g.forward([3.0, 4.0])
-    assert out.v == 12.0
+    def test_add(self):
+        g, x1, x2, x3, out = make_add_graph()
+        g.forward([1.0, 2.0, 3.0])
+        assert out.v == 6.0
 
+    def test_wrong_input_count_raises(self):
+        g, *_ = make_multiply_graph()
+        with pytest.raises(Exception, match="number of input"):
+            g.forward([1.0])
 
-def test_forward_add():
-    g, x1, x2, x3, out = make_add_graph()
-    g.forward([1.0, 2.0, 3.0])
-    assert out.v == 6.0
-
-
-def test_forward_wrong_input_count_raises():
-    g, *_ = make_multiply_graph()
-    with pytest.raises(Exception, match="number of input"):
-        g.forward([1.0])
-
-
-def test_forward_sets_forwarded_flag():
-    g, *_ = make_multiply_graph()
-    assert g.forwarded is False
-    g.forward([1.0, 2.0])
-    assert g.forwarded is True
+    def test_sets_forwarded_flag(self):
+        g, *_ = make_multiply_graph()
+        assert g.forwarded is False
+        g.forward([1.0, 2.0])
+        assert g.forwarded is True
 
 
 # ---------------------------------------------------------------------------
 # backward
 # ---------------------------------------------------------------------------
 
-def test_backward_requires_forward_first():
-    g, *_ = make_multiply_graph()
-    with pytest.raises(Exception, match="call forward first"):
+class TestBackward:
+    def test_requires_forward_first(self):
+        g, *_ = make_multiply_graph()
+        with pytest.raises(Exception, match="call forward first"):
+            g.backward()
+
+    def test_multiply_grads(self):
+        g, x1, x2, out = make_multiply_graph()
+        g.forward([3.0, 4.0])
         g.backward()
+        assert x1.grad_v == 4.0
+        assert x2.grad_v == 3.0
 
-
-def test_backward_multiply_grads():
-    g, x1, x2, out = make_multiply_graph()
-    g.forward([3.0, 4.0])
-    g.backward()
-    assert x1.grad_v == 4.0
-    assert x2.grad_v == 3.0
-
-
-def test_backward_add_grads():
-    g, x1, x2, x3, out = make_add_graph()
-    g.forward([1.0, 2.0, 3.0])
-    g.backward()
-    assert x1.grad_v == 1.0
-    assert x2.grad_v == 1.0
-    assert x3.grad_v == 1.0
+    def test_add_grads(self):
+        g, x1, x2, x3, out = make_add_graph()
+        g.forward([1.0, 2.0, 3.0])
+        g.backward()
+        assert x1.grad_v == 1.0
+        assert x2.grad_v == 1.0
+        assert x3.grad_v == 1.0
 
 
 # ---------------------------------------------------------------------------

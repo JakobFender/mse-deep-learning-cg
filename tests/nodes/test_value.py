@@ -43,25 +43,24 @@ def test_forward_raises_without_value():
         node.forward()
 
 
-def test_backward_sets_grad():
-    node = ValueNode(1.0)
-    node.backward(2.0)
-    assert node.grad_v == 2.0
+class TestBackward:
+    def test_sets_grad(self):
+        node = ValueNode(1.0)
+        node.backward(2.0)
+        assert node.grad_v == 2.0
 
+    def test_accumulates_grad(self):
+        node = ValueNode(1.0)
+        node.backward(2.0)
+        node.backward(3.0)
+        assert node.grad_v == 5.0
 
-def test_backward_accumulates_grad():
-    node = ValueNode(1.0)
-    node.backward(2.0)
-    node.backward(3.0)
-    assert node.grad_v == 5.0
-
-
-def test_backward_propagates_to_parent():
-    parent = ValueNode(1.0)
-    child = ValueNode()
-    parent.connect_to(child)
-    child.backward(1.0)
-    assert parent.grad_v == 1.0
+    def test_propagates_to_parent(self):
+        parent = ValueNode(1.0)
+        child = ValueNode()
+        parent.connect_to(child)
+        child.backward(1.0)
+        assert parent.grad_v == 1.0
 
 
 def test_reset_values():
