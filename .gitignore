@@ -2,3 +2,11 @@
 .idea
 .vscode
 .claude
+
+# Setup and builds
+*.egg-info/
+dist/
+build/
+__pycache__/
+*.pyc
+.eggs/
