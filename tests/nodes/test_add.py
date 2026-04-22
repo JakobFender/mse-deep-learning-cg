@@ -5,8 +5,8 @@ from computational_graph.nodes.value import ValueNode
 
 
 def make_add(*values):
-    in_nodes = [ValueNode(v) for v in values]
-    out = ValueNode()
+    in_nodes = [ValueNode(f"x{i}", v) for i, v in enumerate(values)]
+    out = ValueNode("out")
     add = AddNode(in_nodes, out)
     return in_nodes, add, out
 
@@ -18,13 +18,11 @@ class TestForward:
             node.forward()
         assert out.v == 5.0
 
-
     def test_three_inputs(self):
         ins, add, out = make_add(1.0, 2.0, 3.0)
         for node in ins:
             node.forward()
         assert out.v == 6.0
-
 
     def test_not_triggered_until_all_inputs(self):
         ins, add, out = make_add(1.0, 2.0, 3.0)

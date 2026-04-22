@@ -9,22 +9,22 @@ from computational_graph.nodes.value import ValueNode
 
 def make_multiply_graph():
     """z = x1 * x2"""
-    x1, x2, out = ValueNode(), ValueNode(), ValueNode()
+    x1, x2, out = ValueNode("x1"), ValueNode("x2"), ValueNode("out")
     MultiplyNode(x1, x2, out)
     return CompGraph([x1, x2], [out]), x1, x2, out
 
 
 def make_add_graph():
     """z = x1 + x2 + x3"""
-    x1, x2, x3, out = ValueNode(), ValueNode(), ValueNode(), ValueNode()
+    x1, x2, x3, out = ValueNode("x1"), ValueNode("x2"), ValueNode("x3"), ValueNode("out")
     AddNode([x1, x2, x3], out)
     return CompGraph([x1, x2, x3], [out]), x1, x2, x3, out
 
 
 def make_chained_graph():
     """z = (x1 * x2)^2  — multiply then square"""
-    x1, x2 = ValueNode(), ValueNode()
-    mid, out = ValueNode(), ValueNode()
+    x1, x2 = ValueNode("x1"), ValueNode("x2")
+    mid, out = ValueNode("mid"), ValueNode("out")
     MultiplyNode(x1, x2, mid)
     SquareNode(mid, out)
     return CompGraph([x1, x2], [out]), x1, x2, mid, out
@@ -111,15 +111,15 @@ class TestResetValues:
 
 
 def test_validate_rejects_non_value_node_input():
-    x = ValueNode()
-    out = ValueNode()
+    x = ValueNode("x")
+    out = ValueNode("out")
     mul = MultiplyNode(x, x, out)
     with pytest.raises(Exception, match="not a ValueNode"):
         CompGraph([mul], [out])
 
 
 def test_validate_rejects_non_value_node_output():
-    x1, x2, out = ValueNode(), ValueNode(), ValueNode()
+    x1, x2, out = ValueNode("x1"), ValueNode("x2"), ValueNode("out")
     mul = MultiplyNode(x1, x2, out)
     with pytest.raises(Exception, match="not a ValueNode"):
         CompGraph([x1, x2], [mul])

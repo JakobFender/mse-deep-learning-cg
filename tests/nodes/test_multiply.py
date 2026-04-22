@@ -5,9 +5,9 @@ from computational_graph.nodes.value import ValueNode
 
 
 def make_mul(x1_val=None, x2_val=None):
-    x1 = ValueNode(x1_val)
-    x2 = ValueNode(x2_val)
-    out = ValueNode()
+    x1 = ValueNode("x1", x1_val)
+    x2 = ValueNode("x2", x2_val)
+    out = ValueNode("out")
     mul = MultiplyNode(x1, x2, out)
     return x1, x2, mul, out
 
@@ -56,7 +56,7 @@ class TestBackward:
         x2.forward()
         mul.backward(3.0)
         assert x1.grad_v == 15.0  # 3 * x2
-        assert x2.grad_v == 6.0   # 3 * x1
+        assert x2.grad_v == 6.0  # 3 * x1
 
 
 def test_overflow_receive_raises():

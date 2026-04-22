@@ -3,8 +3,8 @@ from computational_graph.nodes.value import ValueNode
 
 
 def make_sq(x_val=None):
-    x = ValueNode(x_val)
-    out = ValueNode()
+    x = ValueNode("x", x_val)
+    out = ValueNode("out")
     sq = SquareNode(x, out)
     return x, sq, out
 
