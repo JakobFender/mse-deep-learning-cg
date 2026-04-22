@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
 
 
@@ -59,4 +60,9 @@ class MetaNode(ABC):
     @abstractmethod
     def backward(self, grad_z):
         """Propagate gradient from downstream to upstream parents."""
+        pass
+
+    @abstractmethod
+    def receive_parent_value(self, v):
+        """Receive one upstream value from a parent node."""
         pass
