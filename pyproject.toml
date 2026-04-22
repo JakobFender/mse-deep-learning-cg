@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=82.0.1"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "computational_graph"
+version = "0.1.0"
+
+requires-python = ">=3.11"
+authors = [
+    { name = "Jakob Fender", email = "jakob.fender@hslu.ch" },
+    { name = "Jahnavi Patil", email = "jahnavi.patil@students.bfh.ch" },
+    { name = "Orlaith Quinn", email = "orlaith.quinn@hslu.ch" },
+]
+
+[project.optional-dependencies]
+dev = ["ruff", "pre-commit"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["computational_graph*"]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["computational_graph"]
