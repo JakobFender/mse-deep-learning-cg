@@ -9,6 +9,7 @@ class ValueNode(MetaNode):
     """A node that stores a scalar value and its accumulated gradient.
 
     Attributes:
+        name (str): Human-readable identifier used in ``__repr__`` and debugging.
         v (float | None): The scalar value held by this node. ``None`` until set.
         grad_v (float | None): Accumulated gradient. ``None`` until a backward
             pass contributes at least one gradient.
@@ -18,6 +19,7 @@ class ValueNode(MetaNode):
         """Create a value node.
 
         Args:
+            name (str): Human-readable identifier for this node.
             v (float, optional): Initial scalar value. When provided, ``input_ready``
                 is set to ``True`` immediately.
         """
