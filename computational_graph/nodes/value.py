@@ -14,7 +14,7 @@ class ValueNode(MetaNode):
             pass contributes at least one gradient.
     """
 
-    def __init__(self, v: Optional[float] = None):
+    def __init__(self, name: str, v: Optional[float] = None):
         """Create a value node.
 
         Args:
@@ -22,6 +22,7 @@ class ValueNode(MetaNode):
                 is set to ``True`` immediately.
         """
         super().__init__()
+        self.name = name
         self.v: Optional[float] = None
         self.grad_v: Optional[float] = None
         if v is not None:
@@ -80,3 +81,6 @@ class ValueNode(MetaNode):
             self.grad_v += grad_z
         for node in self.parents:
             node.backward(grad_z)
+
+    def __repr__(self) -> str:
+        return f"ValueNode(name={self.name}, v={self.v}, grad={self.grad_v})"
