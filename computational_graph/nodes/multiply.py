@@ -81,4 +81,4 @@ class MultiplyNode(MetaNode):
         self.parents[1].backward(grad_z * x1_val)
 
     def __repr__(self) -> str:
-        return f"MultiplyNode(x1={self.parents[0].name}, x2={self.parents[1].name}, out={self.children[0].name}"
+        return f"MultiplyNode(x1={self.parents[0].name}, x2={self.parents[1].name}, out={self.children[0].name})"
