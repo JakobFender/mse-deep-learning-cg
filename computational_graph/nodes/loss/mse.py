@@ -58,4 +58,4 @@ class MSENode(MetaNode):
         self.parents[0].backward(grad_x)
 
     def __repr__(self) -> str:
-        return f"SquareNode(in={self.parents[0].name}, out={self.children[0].name})"
+        return f"MSENode(y_pred={self.parents[0].name}, y_true={self.parents[1].name}, out={self.children[0].name})"
