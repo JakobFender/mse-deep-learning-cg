@@ -1,8 +1,13 @@
-from computational_graph import MetaNode, ValueNode
+from computational_graph import CompGraph, MetaNode, ValueNode
 from computational_graph.optimizers.abstract_optimizer import AbstractOptimizer
 
 
 class GradientDescentOptimizer(AbstractOptimizer):
+    def __init__(self, comp_graph: CompGraph, learning_rate: float, momentum: float = 0.0):
+        super().__init__(comp_graph, learning_rate)
+        self.momentum = momentum
+        self.velocity = {}
+
     def step(self):
         """
         Updates the values of trainable `MetaNodes` based.
@@ -19,7 +24,8 @@ class GradientDescentOptimizer(AbstractOptimizer):
                 return
             visited.add(id(node))
 
-            node.v -= node.grad_v * self.learning_rate
+            self.velocity[node] = self.momentum * self.velocity.get(node, 0.0) + node.grad_v
+            node.v -= self.learning_rate * self.velocity[node]
 
             for child in node.children:
                 visit(child)
