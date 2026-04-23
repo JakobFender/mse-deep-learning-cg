@@ -109,7 +109,7 @@ class CompGraph:
             visited.add(id(node))
 
             lines.append(str(node))
-            for i, child in enumerate(node.children):
+            for child in node.children:
                 visit(child)
 
         lines.append(" --- Input Nodes --- ")
