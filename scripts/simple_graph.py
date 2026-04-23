@@ -19,7 +19,7 @@ square = SquareNode(q2, f)
 cg = CompGraph([x1, x2, x3], [f])
 
 # test the graph with some random inputs, output should be 100.0
-cg.forward([2.0, 4.0, 2.0])
+cg.forward([[2.0, 4.0, 2.0]])
 print(cg)
 
 print(generate_tikz(cg))

@@ -47,7 +47,7 @@ x1, x2, out = ValueNode(), ValueNode(), ValueNode()
 MultiplyNode(x1, x2, out)
 
 g = CompGraph([x1, x2], [out])
-g.forward([3.0, 4.0])   # out.v == 12.0
+g.forward([[3.0, 4.0]])   # out.v == 12.0
 g.backward()             # x1.grad_v == 4.0, x2.grad_v == 3.0
 g.reset_values()
 ```

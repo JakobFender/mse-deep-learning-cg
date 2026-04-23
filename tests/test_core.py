@@ -33,23 +33,23 @@ def make_chained_graph():
 class TestForward:
     def test_multiply(self):
         g, x1, x2, out = make_multiply_graph()
-        g.forward([3.0, 4.0])
+        g.forward([[3.0, 4.0]])
         assert out.v == 12.0
 
     def test_add(self):
         g, x1, x2, x3, out = make_add_graph()
-        g.forward([1.0, 2.0, 3.0])
+        g.forward([[1.0, 2.0, 3.0]])
         assert out.v == 6.0
 
     def test_wrong_input_count_raises(self):
         g, *_ = make_multiply_graph()
         with pytest.raises(ValueError, match="number of input"):
-            g.forward([1.0])
+            g.forward([[1.0]])
 
     def test_sets_forwarded_flag(self):
         g, *_ = make_multiply_graph()
         assert g.forwarded is False
-        g.forward([1.0, 2.0])
+        g.forward([[1.0, 2.0]])
         assert g.forwarded is True
 
 
@@ -61,14 +61,14 @@ class TestBackward:
 
     def test_multiply_grads(self):
         g, x1, x2, out = make_multiply_graph()
-        g.forward([3.0, 4.0])
+        g.forward([[3.0, 4.0]])
         g.backward()
         assert x1.grad_v == 4.0
         assert x2.grad_v == 3.0
 
     def test_add_grads(self):
         g, x1, x2, x3, out = make_add_graph()
-        g.forward([1.0, 2.0, 3.0])
+        g.forward([[1.0, 2.0, 3.0]])
         g.backward()
         assert x1.grad_v == 1.0
         assert x2.grad_v == 1.0
@@ -78,13 +78,13 @@ class TestBackward:
 class TestChainedGraph:
     def test_chained_forward(self):
         g, x1, x2, mid, out = make_chained_graph()
-        g.forward([3.0, 2.0])  # mid = 6, out = 36
+        g.forward([[3.0, 2.0]])  # mid = 6, out = 36
         assert mid.v == 6.0
         assert out.v == 36.0
 
     def test_chained_backward(self):
         g, x1, x2, mid, out = make_chained_graph()
-        g.forward([3.0, 2.0])  # mid = 6
+        g.forward([[3.0, 2.0]])  # mid = 6
         g.backward()
         # dL/dmid = 2*mid = 12; dL/dx1 = 12*x2 = 24; dL/dx2 = 12*x1 = 36
         assert x1.grad_v == pytest.approx(24.0)
@@ -94,7 +94,7 @@ class TestChainedGraph:
 class TestResetValues:
     def test_reset_clears_state(self):
         g, x1, x2, out = make_multiply_graph()
-        g.forward([3.0, 4.0])
+        g.forward([[3.0, 4.0]])
         g.backward()
         g.reset_values()
         assert out.v is None
@@ -102,16 +102,16 @@ class TestResetValues:
 
     def test_reset_allows_second_forward(self):
         g, x1, x2, out = make_multiply_graph()
-        g.forward([3.0, 4.0])
+        g.forward([[3.0, 4.0]])
         g.reset_values()
-        g.forward([2.0, 5.0])
+        g.forward([[2.0, 5.0]])
         assert out.v == 10.0
 
 
 class TestZeroGrad:
     def test_clears_gradients(self):
         g, x1, x2, out = make_multiply_graph()
-        g.forward([3.0, 4.0])
+        g.forward([[3.0, 4.0]])
         g.backward()
         g.zero_grad()
         assert x1.grad_v is None
@@ -120,7 +120,7 @@ class TestZeroGrad:
 
     def test_preserves_values(self):
         g, x1, x2, out = make_multiply_graph()
-        g.forward([3.0, 4.0])
+        g.forward([[3.0, 4.0]])
         g.backward()
         g.zero_grad()
         assert x1.v == 3.0
@@ -129,7 +129,7 @@ class TestZeroGrad:
 
     def test_second_backward_does_not_accumulate(self):
         g, x1, x2, out = make_multiply_graph()
-        g.forward([3.0, 4.0])
+        g.forward([[3.0, 4.0]])
         g.backward()
         g.zero_grad()
         g.backward()

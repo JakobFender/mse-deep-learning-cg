@@ -45,23 +45,24 @@ class CompGraph:
             if not isinstance(node, ValueNode):
                 raise TypeError("Output node of CompGraph is not a ValueNode")
 
-    def forward(self, input_values: list[float]):
+    def forward(self, input_values: list[list[float]]):
         """Run a forward pass, feeding values into input nodes.
 
         Args:
-            input_values (list[float]): Scalar values fed to ``in_nodes`` in the
+            input_values (list[list[float]]): Scalar values fed to ``in_nodes`` in the
                 same order.
 
         Raises:
             ValueError: If the length of ``input_values`` does not match the number
                 of input nodes.
         """
-        if len(input_values) != len(self.in_nodes):
-            raise ValueError("Can't forward: number of input differs to number of input nodes")
-        for i, in_node in enumerate(self.in_nodes):
-            in_node.receive_parent_value(input_values[i])
-            in_node.forward()
-        self.forwarded = True
+        for sample in input_values:
+            if len(sample) != len(self.in_nodes):
+                raise ValueError("Can't forward: number of input differs to number of input nodes")
+            for i, in_node in enumerate(self.in_nodes):
+                in_node.receive_parent_value(sample[i])
+                in_node.forward()
+            self.forwarded = True
 
     def backward(self):
         """Run a backward pass from all output nodes with a unit upstream gradient.

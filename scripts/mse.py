@@ -12,7 +12,7 @@ mse = MSENode(x1, x2, loss)
 
 cg = CompGraph([x1, x2], [loss])
 
-cg.forward([2.0, 8.0])
+cg.forward([[2.0, 8.0]])
 cg.backward()
 
 print("Own Implementation:")
