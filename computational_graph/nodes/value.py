@@ -14,7 +14,7 @@ class ValueNode(MetaNode):
             pass contributes at least one gradient.
     """
 
-    def __init__(self, name: str = "", v: Optional[float] = None):
+    def __init__(self, name: str = "", v: Optional[float] = None, trainable=False):
         """Create a value node.
 
         Args:
@@ -28,6 +28,7 @@ class ValueNode(MetaNode):
         if v is not None:
             self.v = v
             self.input_ready = True
+        self.trainable = trainable
 
     def receive_parent_value(self, v: float):
         """Store an incoming value from a parent node and mark this node ready.
