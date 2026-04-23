@@ -1,6 +1,6 @@
 import pytest
 
-from computational_graph.nodes.add import AddNode
+from computational_graph.nodes.arithmetic.add import AddNode
 from computational_graph.nodes.value import ValueNode
 
 

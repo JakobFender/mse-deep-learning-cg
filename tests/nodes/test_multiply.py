@@ -1,6 +1,6 @@
 import pytest
 
-from computational_graph.nodes.multiply import MultiplyNode
+from computational_graph.nodes.arithmetic.multiply import MultiplyNode
 from computational_graph.nodes.value import ValueNode
 
 

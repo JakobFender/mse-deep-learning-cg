@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from .meta import MetaNode
-from .value import ValueNode
+from computational_graph.nodes.meta import MetaNode
+from computational_graph.nodes.value import ValueNode
 
 
 class SquareNode(MetaNode):

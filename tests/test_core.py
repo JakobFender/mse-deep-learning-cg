@@ -1,9 +1,9 @@
 import pytest
 
 from computational_graph.core import CompGraph
-from computational_graph.nodes.add import AddNode
-from computational_graph.nodes.multiply import MultiplyNode
-from computational_graph.nodes.square import SquareNode
+from computational_graph.nodes.arithmetic.add import AddNode
+from computational_graph.nodes.arithmetic.multiply import MultiplyNode
+from computational_graph.nodes.arithmetic.square import SquareNode
 from computational_graph.nodes.value import ValueNode
 
 

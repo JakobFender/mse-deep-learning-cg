@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from collections import defaultdict, deque
 
+from computational_graph.nodes.arithmetic.add import AddNode
+from computational_graph.nodes.arithmetic.multiply import MultiplyNode
+from computational_graph.nodes.arithmetic.square import SquareNode
+
 from ..core import CompGraph
-from ..nodes.add import AddNode
-from ..nodes.multiply import MultiplyNode
-from ..nodes.square import SquareNode
 from ..nodes.value import ValueNode
 
 _OPERATOR_SYMBOLS: dict[type, str] = {

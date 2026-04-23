@@ -1,4 +1,4 @@
-from computational_graph.nodes.square import SquareNode
+from computational_graph.nodes.arithmetic.square import SquareNode
 from computational_graph.nodes.value import ValueNode
 
 
