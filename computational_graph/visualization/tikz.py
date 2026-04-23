@@ -6,7 +6,7 @@ from computational_graph.nodes.arithmetic.add import AddNode
 from computational_graph.nodes.arithmetic.multiply import MultiplyNode
 from computational_graph.nodes.arithmetic.square import SquareNode
 
-from ..core import CompGraph
+from ..comp_graph import CompGraph
 from ..nodes.value import ValueNode
 
 _OPERATOR_SYMBOLS: dict[type, str] = {

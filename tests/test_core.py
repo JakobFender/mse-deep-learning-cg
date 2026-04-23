@@ -1,6 +1,6 @@
 import pytest
 
-from computational_graph.core import CompGraph
+from computational_graph.comp_graph import CompGraph
 from computational_graph.nodes.arithmetic.add import AddNode
 from computational_graph.nodes.arithmetic.multiply import MultiplyNode
 from computational_graph.nodes.arithmetic.square import SquareNode
