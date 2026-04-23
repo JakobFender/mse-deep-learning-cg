@@ -108,6 +108,35 @@ class TestResetValues:
         assert out.v == 10.0
 
 
+class TestZeroGrad:
+    def test_clears_gradients(self):
+        g, x1, x2, out = make_multiply_graph()
+        g.forward([3.0, 4.0])
+        g.backward()
+        g.zero_grad()
+        assert x1.grad_v is None
+        assert x2.grad_v is None
+        assert out.grad_v is None
+
+    def test_preserves_values(self):
+        g, x1, x2, out = make_multiply_graph()
+        g.forward([3.0, 4.0])
+        g.backward()
+        g.zero_grad()
+        assert x1.v == 3.0
+        assert x2.v == 4.0
+        assert out.v == 12.0
+
+    def test_second_backward_does_not_accumulate(self):
+        g, x1, x2, out = make_multiply_graph()
+        g.forward([3.0, 4.0])
+        g.backward()
+        g.zero_grad()
+        g.backward()
+        assert x1.grad_v == 4.0
+        assert x2.grad_v == 3.0
+
+
 def test_validate_rejects_non_value_node_input():
     x = ValueNode("x")
     out = ValueNode("out")

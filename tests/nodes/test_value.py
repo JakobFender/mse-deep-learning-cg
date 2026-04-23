@@ -63,19 +63,49 @@ class TestBackward:
         assert parent.grad_v == 1.0
 
 
-def test_reset_values():
-    node = ValueNode("x", 3.0)
-    node.grad_v = 1.0
-    node.reset_values()
-    assert node.v is None
-    assert node.input_ready is False
+class TestZeroGrad:
+    def test_zero_grad_clears_grad(self):
+        node = ValueNode("x", 3.0)
+        node.backward(5.0)
+        node.zero_grad()
+        assert node.grad_v is None
+
+    def test_zero_grad_preserves_value(self):
+        node = ValueNode("x", 3.0)
+        node.backward(5.0)
+        node.zero_grad()
+        assert node.v == 3.0
+
+    def test_zero_grad_propagates_to_children(self):
+        parent = ValueNode("parent", 2.0)
+        child = ValueNode("child")
+        parent.connect_to(child)
+        child.receive_parent_value(2.0)
+        child.backward(1.0)
+        parent.zero_grad()
+        assert child.grad_v is None
 
 
-def test_reset_propagates_to_children():
-    parent = ValueNode("parent", 3.0)
-    child = ValueNode("child")
-    parent.connect_to(child)
-    child.receive_parent_value(3.0)
-    parent.reset_values()
-    assert child.v is None
-    assert child.input_ready is False
+class TestReset:
+    def test_reset_values(self):
+        node = ValueNode("x", 3.0)
+        node.grad_v = 1.0
+        node.reset_values()
+        assert node.v is None
+        assert node.input_ready is False
+
+    def test_reset_propagates_to_children(self):
+        parent = ValueNode("parent", 3.0)
+        child = ValueNode("child")
+        parent.connect_to(child)
+        child.receive_parent_value(3.0)
+        parent.reset_values()
+        assert child.v is None
+        assert child.input_ready is False
+
+    def test_reset_preserves_grad(self):
+        node = ValueNode("x", 3.0)
+        node.grad_v = 1.0
+        node.v = 2.0
+        node.reset_values()
+        assert node.grad_v == 1.0
