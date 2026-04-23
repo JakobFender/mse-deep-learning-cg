@@ -35,6 +35,7 @@ class MSENode(MetaNode):
 
     def _reset_local(self):
         """Clear the stored input value and readiness flag."""
+        self._received_count = 0
         self.input_ready = False
 
     def forward(self):
