@@ -53,7 +53,7 @@ class AddNode(MetaNode):
                 node.receive_parent_value(s)
                 node.forward()
 
-    def backward(self, grad_z: float, batch_size: int):
+    def backward(self, grad_z: float, batch_size: int = 1):
         """Distribute the upstream gradient equally to all parent nodes.
 
         The gradient of a sum with respect to each addend is 1, so ``grad_z``

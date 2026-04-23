@@ -71,7 +71,7 @@ class MultiplyNode(MetaNode):
                 node.receive_parent_value(z)
                 node.forward()
 
-    def backward(self, grad_z: float, batch_size: int):
+    def backward(self, grad_z: float, batch_size: int = 1):
         """Apply the product rule and route gradients to both parent nodes.
 
         Args:

@@ -47,7 +47,7 @@ class SquareNode(MetaNode):
                 node.receive_parent_value(z)
                 node.forward()
 
-    def backward(self, grad_z: float, batch_size: int):
+    def backward(self, grad_z: float, batch_size: int = 1):
         """Apply the derivative of the square function and propagate to the parent.
 
         Uses d(x^2)/dx = 2x, so the gradient passed upstream is ``2 * x * grad_z``.

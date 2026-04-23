@@ -62,6 +62,30 @@ class TestBackward:
         child.backward(1.0)
         assert parent.grad_v == 1.0
 
+    def test_batch_size_divides_grad(self):
+        node = ValueNode("x", 1.0)
+        node.backward(6.0, batch_size=2)
+        assert node.grad_v == pytest.approx(3.0)  # 6 / 2
+
+    def test_batch_size_one_is_default(self):
+        node = ValueNode("x", 1.0)
+        node.backward(6.0, batch_size=1)
+        assert node.grad_v == pytest.approx(6.0)
+
+    def test_batch_size_accumulates_correctly(self):
+        node = ValueNode("x", 1.0)
+        node.backward(6.0, batch_size=2)
+        node.backward(4.0, batch_size=2)
+        assert node.grad_v == pytest.approx(5.0)  # 6/2 + 4/2
+
+    def test_batch_size_not_applied_to_parent(self):
+        # batch_size divides only at ValueNode; the raw grad_z is forwarded upstream
+        parent = ValueNode("parent", 1.0)
+        child = ValueNode("child")
+        parent.connect_to(child)
+        child.backward(6.0, batch_size=2)
+        assert parent.grad_v == pytest.approx(3.0)  # parent also divides by batch_size
+
 
 class TestZeroGrad:
     def test_zero_grad_clears_grad(self):

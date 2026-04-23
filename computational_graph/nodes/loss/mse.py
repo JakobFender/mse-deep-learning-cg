@@ -71,7 +71,7 @@ class MSENode(MetaNode):
                 node.receive_parent_value(z)
                 node.forward()
 
-    def backward(self, grad_z: float, batch_size: int):
+    def backward(self, grad_z: float, batch_size: int = 1):
         """Propagate the gradient of the loss with respect to ``y_pred``.
 
         Uses ``d/dy_pred [(y_true - y_pred)²] = -2 * (y_true - y_pred) = 2 * (y_pred - y_true)``,

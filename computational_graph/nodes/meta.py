@@ -89,7 +89,7 @@ class MetaNode(ABC):
             node.zero_grad()
 
     @abstractmethod
-    def backward(self, grad_z: float, batch_size: int):
+    def backward(self, grad_z: float, batch_size: int = 1):
         """Propagate the gradient from a downstream node to upstream parents.
 
         Args:
