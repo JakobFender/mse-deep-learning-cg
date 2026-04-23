@@ -61,9 +61,3 @@ class SquareNode(MetaNode):
 
     def __repr__(self) -> str:
         return f"SquareNode(in={self.parents[0].name}, out={self.children[0].name})"
-
-
-# ######  TO DO  #########
-# class MSELossNode(MetaNode):
-# Advice: mimic the MultiplyNode and adapt the forward() and
-# backward() methods
