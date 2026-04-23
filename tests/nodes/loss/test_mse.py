@@ -65,7 +65,7 @@ def test_overflow_receive_raises():
     y_pred, y_true, mse, out = make_mse(1.0, 2.0)
     y_pred.forward()
     y_true.forward()
-    with pytest.raises(Exception, match="already filled"):
+    with pytest.raises(ValueError, match="already filled"):
         mse.receive_parent_value(9.0)
 
 

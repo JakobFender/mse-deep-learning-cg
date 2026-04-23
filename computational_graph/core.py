@@ -23,7 +23,7 @@ class CompGraph:
             out_nodes (list[ValueNode]): Ordered list of nodes considered graph outputs.
 
         Raises:
-            Exception: If any node in ``in_nodes`` or ``out_nodes`` is not a
+            TypeError: If any node in ``in_nodes`` or ``out_nodes`` is not a
                 ``ValueNode``.
         """
         self.in_nodes = in_nodes
@@ -35,15 +35,15 @@ class CompGraph:
         """Validate that all boundary nodes are ``ValueNode`` instances.
 
         Raises:
-            Exception: If any node in ``in_nodes`` or ``out_nodes`` is not a
+            TypeError: If any node in ``in_nodes`` or ``out_nodes`` is not a
                 ``ValueNode``.
         """
         for node in self.in_nodes:
             if not isinstance(node, ValueNode):
-                raise Exception("Input node of CompGraph is not a ValueNode")
+                raise TypeError("Input node of CompGraph is not a ValueNode")
         for node in self.out_nodes:
             if not isinstance(node, ValueNode):
-                raise Exception("Output node of CompGraph is not a ValueNode")
+                raise TypeError("Output node of CompGraph is not a ValueNode")
 
     def forward(self, input_values: list[float]):
         """Run a forward pass, feeding values into input nodes.
@@ -53,11 +53,11 @@ class CompGraph:
                 same order.
 
         Raises:
-            Exception: If the length of ``input_values`` does not match the number
+            ValueError: If the length of ``input_values`` does not match the number
                 of input nodes.
         """
         if len(input_values) != len(self.in_nodes):
-            raise Exception("Can't forward: number of input differs to number of input nodes")
+            raise ValueError("Can't forward: number of input differs to number of input nodes")
         for i, in_node in enumerate(self.in_nodes):
             in_node.receive_parent_value(input_values[i])
             in_node.forward()
@@ -67,10 +67,10 @@ class CompGraph:
         """Run a backward pass from all output nodes with a unit upstream gradient.
 
         Raises:
-            Exception: If called before at least one successful forward pass.
+            RuntimeError: If called before at least one successful forward pass.
         """
         if not self.forwarded:
-            raise Exception("Can't backward, you need to call forward first")
+            raise RuntimeError("Can't backward, you need to call forward first")
         for node in self.out_nodes:
             node.backward(1.0)
 

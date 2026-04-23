@@ -48,11 +48,11 @@ class MultiplyNode(MetaNode):
             v (float): Value forwarded by the calling parent (ignored locally).
 
         Raises:
-            Exception: If both inputs have already been received.
+            ValueError: If both inputs have already been received.
         """
         del v  # value is read from parents[].v in forward/backward
         if self._received_count >= 2:
-            raise Exception("This node accepts 2 inputs that are already filled")
+            raise ValueError("This node accepts 2 inputs that are already filled")
         self._received_count += 1
         if self._received_count == 2:
             self.input_ready = True

@@ -39,7 +39,7 @@ def test_forward_propagates_to_child():
 
 def test_forward_raises_without_value():
     node = ValueNode("x")
-    with pytest.raises(Exception, match="no value set"):
+    with pytest.raises(RuntimeError, match="no value set"):
         node.forward()
 
 

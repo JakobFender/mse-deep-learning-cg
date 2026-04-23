@@ -38,7 +38,7 @@ class AddNode(MetaNode):
         if len(self.inputs) == len(self.parents):
             self.input_ready = True
         elif len(self.inputs) > len(self.parents):
-            raise Exception("All inputs are already set")
+            raise ValueError("All inputs are already set")
 
     def _reset_local(self):
         """Clear the collected input values and readiness flag."""

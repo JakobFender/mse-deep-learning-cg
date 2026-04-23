@@ -59,10 +59,10 @@ class ValueNode(MetaNode):
         """Forward the stored value to all children.
 
         Raises:
-            Exception: If ``v`` is ``None`` when ``forward`` is called.
+            RuntimeError: If ``v`` is ``None`` when ``forward`` is called.
         """
         if self.v is None:
-            raise Exception("Forward not possible as no value set in this ValueNode")
+            raise RuntimeError("Forward not possible as no value set in this ValueNode")
         for node in self.children:
             node.receive_parent_value(self.v)
             node.forward()

@@ -43,7 +43,7 @@ class TestForward:
 
     def test_wrong_input_count_raises(self):
         g, *_ = make_multiply_graph()
-        with pytest.raises(Exception, match="number of input"):
+        with pytest.raises(ValueError, match="number of input"):
             g.forward([1.0])
 
     def test_sets_forwarded_flag(self):
@@ -56,7 +56,7 @@ class TestForward:
 class TestBackward:
     def test_requires_forward_first(self):
         g, *_ = make_multiply_graph()
-        with pytest.raises(Exception, match="call forward first"):
+        with pytest.raises(RuntimeError, match="call forward first"):
             g.backward()
 
     def test_multiply_grads(self):
@@ -114,12 +114,12 @@ def test_validate_rejects_non_value_node_input():
     x = ValueNode("x")
     out = ValueNode("out")
     mul = MultiplyNode(x, x, out)
-    with pytest.raises(Exception, match="not a ValueNode"):
+    with pytest.raises(TypeError, match="not a ValueNode"):
         CompGraph([mul], [out])
 
 
 def test_validate_rejects_non_value_node_output():
     x1, x2, out = ValueNode("x1"), ValueNode("x2"), ValueNode("out")
     mul = MultiplyNode(x1, x2, out)
-    with pytest.raises(Exception, match="not a ValueNode"):
+    with pytest.raises(TypeError, match="not a ValueNode"):
         CompGraph([x1, x2], [mul])

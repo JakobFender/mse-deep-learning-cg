@@ -56,7 +56,7 @@ def test_overflow_receive_raises():
     ins, add, out = make_add(1.0, 2.0)
     for node in ins:
         node.forward()
-    with pytest.raises(Exception, match="already set"):
+    with pytest.raises(ValueError, match="already set"):
         add.receive_parent_value(9.0)
 
 

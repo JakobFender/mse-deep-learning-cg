@@ -63,7 +63,7 @@ def test_overflow_receive_raises():
     x1, x2, mul, out = make_mul(1.0, 2.0)
     x1.forward()
     x2.forward()
-    with pytest.raises(Exception, match="already filled"):
+    with pytest.raises(ValueError, match="already filled"):
         mul.receive_parent_value(9.0)
 
 
