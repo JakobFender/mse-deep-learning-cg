@@ -84,6 +84,20 @@ class CompGraph:
             node.reset_values()
         self.forwarded = False
 
+    def zero_grad(self):
+        """
+        Resets the gradients recursively.
+
+        This method iterates over the list of incoming nodes (`in_nodes`) and calls the
+        `zero_grad` method on each node. It is generally used to clear previously
+        accumulated gradients before a new computation or optimization step.
+
+        Raises:
+            AttributeError: If any node in `in_nodes` does not have a `zero_grad` method.
+        """
+        for node in self.in_nodes:
+            node.zero_grad()
+
     def __repr__(self) -> str:
         lines = []
         visited = set()

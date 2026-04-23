@@ -52,8 +52,10 @@ class ValueNode(MetaNode):
     def _reset_local(self):
         """Clear the stored value, gradient, and readiness flag."""
         self.v = None
-        self.grad_v = None
         self.input_ready = False
+
+    def _zero_local_grad(self):
+        self.grad_v = None
 
     def forward(self):
         """Forward the stored value to all children.

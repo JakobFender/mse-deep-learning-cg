@@ -98,8 +98,6 @@ class TestResetValues:
         g.backward()
         g.reset_values()
         assert out.v is None
-        assert x1.grad_v is None
-        assert x2.grad_v is None
         assert g.forwarded is False
 
     def test_reset_allows_second_forward(self):

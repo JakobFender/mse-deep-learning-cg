@@ -74,6 +74,20 @@ class MetaNode(ABC):
         for node in self.children:
             node.reset_values()
 
+    def _zero_local_grad(self):
+        """Clears gradient in preparation for a new optimizer step."""
+        pass
+
+    def zero_grad(self):
+        """Clear gradient and recursively reset all descendants.
+
+        Calls ``zero_local_grad`` on this node, then calls ``zero_grad``
+        on each child in order.
+        """
+        self._zero_local_grad()
+        for node in self.children:
+            node.zero_grad()
+
     @abstractmethod
     def backward(self, grad_z: float):
         """Propagate gradient from a downstream node to upstream parents.

@@ -68,7 +68,6 @@ def test_reset_values():
     node.grad_v = 1.0
     node.reset_values()
     assert node.v is None
-    assert node.grad_v is None
     assert node.input_ready is False
 
 
