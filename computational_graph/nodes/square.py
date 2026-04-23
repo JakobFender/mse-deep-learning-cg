@@ -12,14 +12,15 @@ class SquareNode(MetaNode):
             ``None`` until a value is received.
     """
 
-    def __init__(self, in_node: ValueNode, out_node: ValueNode):
+    def __init__(self, in_node: ValueNode, out_node: ValueNode, name: str = ""):
         """Create a square operator node and wire up connections.
 
         Args:
             in_node (ValueNode): Input node providing the value to be squared.
             out_node (ValueNode): Output node that receives ``x^2``.
+            name (str): Human-readable identifier for this node.
         """
-        super().__init__()
+        super().__init__(name)
         in_node.connect_to(self)
         self.connect_to(out_node)
         self.x: float = None

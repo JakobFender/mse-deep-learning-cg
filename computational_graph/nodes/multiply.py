@@ -14,15 +14,16 @@ class MultiplyNode(MetaNode):
         _received_count (int): Number of parent values received in the current pass.
     """
 
-    def __init__(self, in1: ValueNode, in2: ValueNode, out: ValueNode):
+    def __init__(self, in1: ValueNode, in2: ValueNode, out: ValueNode, name: str = ""):
         """Create a multiplication operator node and wire up connections.
 
         Args:
             in1 (ValueNode): First multiplicand node.
             in2 (ValueNode): Second multiplicand node.
             out (ValueNode): Output node that receives ``x1 * x2``.
+            name (str): Human-readable identifier for this node.
         """
-        super().__init__()
+        super().__init__(name)
         # parents[0] is always x1, parents[1] is always x2
         in1.connect_to(self)
         in2.connect_to(self)

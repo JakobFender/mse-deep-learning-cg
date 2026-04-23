@@ -11,14 +11,15 @@ class AddNode(MetaNode):
         inputs (list[float]): Values received from parent nodes in the current pass.
     """
 
-    def __init__(self, in_nodes: list[ValueNode], out_node: ValueNode):
+    def __init__(self, in_nodes: list[ValueNode], out_node: ValueNode, name: str = ""):
         """Create an addition operator with an arbitrary number of inputs.
 
         Args:
             in_nodes (list[ValueNode]): Input addend nodes.
             out_node (ValueNode): Output node that receives the sum.
+            name (str): Human-readable identifier for this node.
         """
-        super().__init__()
+        super().__init__(name)
         for node in in_nodes:
             node.connect_to(self)
         self.connect_to(out_node)

@@ -7,12 +7,14 @@ class MetaNode(ABC):
     """Base abstraction for all graph nodes.
 
     Attributes:
+        name (str): Human-readable identifier used in ``__repr__`` and debugging.
         parents (list[MetaNode]): Upstream nodes that feed values into this node.
         children (list[MetaNode]): Downstream nodes that receive values from this node.
         input_ready (bool): Whether all required inputs have been received.
     """
 
-    def __init__(self):
+    def __init__(self, name: str = ""):
+        self.name: str = name
         self.parents: list[MetaNode] = []
         self.children: list[MetaNode] = []
         self.input_ready: bool = False
