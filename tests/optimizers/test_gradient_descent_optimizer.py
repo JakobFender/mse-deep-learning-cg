@@ -4,7 +4,7 @@ from computational_graph.comp_graph import CompGraph
 from computational_graph.nodes.arithmetic.multiply import MultiplyNode
 from computational_graph.nodes.arithmetic.square import SquareNode
 from computational_graph.nodes.value import ValueNode
-from computational_graph.optimizers.gradient_descent_optimizer import GradientDescent
+from computational_graph.optimizers.gradient_descent import GradientDescent
 
 
 def make_graph(w_val, lr, trainable=True, momentum=0.0):
