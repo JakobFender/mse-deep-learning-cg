@@ -64,7 +64,7 @@ class CompGraph:
                 in_node.forward()
             self.forwarded = True
 
-    def backward(self):
+    def backward(self, batch_size: int = 1):
         """Run a backward pass from all output nodes with a unit upstream gradient.
 
         Raises:

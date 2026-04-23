@@ -71,15 +71,16 @@ class MultiplyNode(MetaNode):
                 node.receive_parent_value(z)
                 node.forward()
 
-    def backward(self, grad_z: float):
+    def backward(self, grad_z: float, batch_size: int):
         """Apply the product rule and route gradients to both parent nodes.
 
         Args:
             grad_z (float): Gradient of the loss with respect to this node's output.
+            batch_size (int): Batch size to scale gradient
         """
         x1_val, x2_val = self.get_parent_values()
-        self.parents[0].backward(grad_z * x2_val)
-        self.parents[1].backward(grad_z * x1_val)
+        self.parents[0].backward(grad_z * x2_val, batch_size)
+        self.parents[1].backward(grad_z * x1_val, batch_size)
 
     def __repr__(self) -> str:
         return f"MultiplyNode(in1={self.parents[0].name}, in2={self.parents[1].name}, out={self.children[0].name})"

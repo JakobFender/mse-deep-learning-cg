@@ -69,7 +69,7 @@ class ValueNode(MetaNode):
             node.receive_parent_value(self.v)
             node.forward()
 
-    def backward(self, grad_z: float):
+    def backward(self, grad_z: float, batch_size: int):
         """Accumulate an incoming gradient and propagate it to all parents.
 
         A ``ValueNode`` may receive gradient contributions from multiple
@@ -77,13 +77,14 @@ class ValueNode(MetaNode):
 
         Args:
             grad_z (float): Gradient of the loss with respect to this node's value.
+            batch_size (int): Batch size to scale gradient
         """
         if self.grad_v is None:
-            self.grad_v = grad_z
+            self.grad_v = grad_z / batch_size
         else:
-            self.grad_v += grad_z
+            self.grad_v += grad_z / batch_size
         for node in self.parents:
-            node.backward(grad_z)
+            node.backward(grad_z, batch_size)
 
     def __repr__(self) -> str:
         return f"ValueNode(name={self.name}, v={self.v}, grad={self.grad_v})"
