@@ -4,7 +4,7 @@ from computational_graph.comp_graph import CompGraph
 from computational_graph.nodes.arithmetic.multiply import MultiplyNode
 from computational_graph.nodes.arithmetic.square import SquareNode
 from computational_graph.nodes.value import ValueNode
-from computational_graph.optimizers.gradient_descent_optimizer import GradientDescentOptimizer
+from computational_graph.optimizers.gradient_descent_optimizer import GradientDescent
 
 
 def make_graph(w_val, lr, trainable=True, momentum=0.0):
@@ -13,7 +13,7 @@ def make_graph(w_val, lr, trainable=True, momentum=0.0):
     out = ValueNode("out")
     SquareNode(w, out)
     g = CompGraph([w], [out])
-    opt = GradientDescentOptimizer(g, lr, momentum=momentum)
+    opt = GradientDescent(g, lr, momentum=momentum)
     return w, out, g, opt
 
 
@@ -63,7 +63,7 @@ class TestStep:
         g = CompGraph([w, x], [out])
         g.forward([[2.0, 3.0]])
         g.backward()  # grad_w = x = 3, grad_x = w = 2
-        opt = GradientDescentOptimizer(g, 0.1)
+        opt = GradientDescent(g, 0.1)
         opt.step()
         assert w.v == pytest.approx(1.7)  # 2.0 - 3.0 * 0.1
         assert x.v == pytest.approx(3.0)  # unchanged

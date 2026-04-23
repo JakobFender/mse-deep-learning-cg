@@ -2,7 +2,7 @@ from computational_graph import CompGraph, MetaNode, ValueNode
 from computational_graph.optimizers.abstract_optimizer import AbstractOptimizer
 
 
-class GradientDescentOptimizer(AbstractOptimizer):
+class GradientDescent(AbstractOptimizer):
     def __init__(self, comp_graph: CompGraph, learning_rate: float, momentum: float = 0.0):
         super().__init__(comp_graph, learning_rate)
         self.momentum = momentum
