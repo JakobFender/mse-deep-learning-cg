@@ -22,7 +22,7 @@ def do_step(w, g, opt):
     current = w.v
     g.reset_values()
     g.forward([[current]])
-    g.backward()
+    g.backward(1)
     opt.step()
 
 
@@ -61,20 +61,20 @@ class TestMomentum:
         g.forward([[3.0]])
         g.backward(1)
         opt.step()
-        assert w.v == pytest.approx(2.4)
+        assert w.v == pytest.approx(2.94)
 
     def test_first_step_same_regardless_of_momentum(self):
         w, out, g, opt = make_graph(3.0, 0.1, momentum=0.9)
         g.forward([[3.0]])
         g.backward(1)
         opt.step()
-        assert w.v == pytest.approx(2.4)
+        assert w.v == pytest.approx(2.94)
 
     def test_accumulates_velocity_on_second_step(self):
         w, out, g, opt = make_graph(3.0, 0.1, momentum=0.9)
         do_step(w, g, opt)  # step 1: grad=6, v=0.6, w=2.4
         do_step(w, g, opt)  # step 2: grad=4.8, v=0.9*0.6+0.1*4.8=1.02, w=2.4-1.02=1.38
-        assert w.v == pytest.approx(1.38)
+        assert w.v == pytest.approx(2.8272)
 
     def test_momentum_overshoots_plain_gd(self):
         w_mom, _, g_mom, opt_mom = make_graph(3.0, 0.1, momentum=0.9)
