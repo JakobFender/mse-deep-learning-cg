@@ -59,23 +59,21 @@ class TestMomentum:
     def test_zero_momentum_equals_plain_gd(self):
         w, out, g, opt = make_graph(3.0, 0.1, momentum=0.0)
         g.forward([[3.0]])
-        g.backward()  # grad = 6; velocity = 0.9*0 + 0.1*6 = 0.6
+        g.backward(1)
         opt.step()
-        assert w.v == pytest.approx(2.4)  # 3.0 - 0.6 (same result, different path)
+        assert w.v == pytest.approx(2.4)
 
     def test_first_step_same_regardless_of_momentum(self):
         w, out, g, opt = make_graph(3.0, 0.1, momentum=0.9)
         g.forward([[3.0]])
-        g.backward()  # grad = 6; velocity = 0.9*0 + 0.1*6 = 0.6
+        g.backward(1)
         opt.step()
-        assert w.v == pytest.approx(2.4)  # 3.0 - 0.6
+        assert w.v == pytest.approx(2.4)
 
     def test_accumulates_velocity_on_second_step(self):
         w, out, g, opt = make_graph(3.0, 0.1, momentum=0.9)
-        # step 1: grad=6, velocity = 0 + 0.1*6 = 0.6, w = 3.0 - 0.6 = 2.4
-        do_step(w, g, opt)
-        # step 2: grad=2*2.4=4.8, velocity = 0.9*0.6 + 0.1*4.8 = 0.54 + 0.48 = 1.02, w = 2.4 - 1.02 = 1.38
-        do_step(w, g, opt)
+        do_step(w, g, opt)  # step 1: grad=6, v=0.6, w=2.4
+        do_step(w, g, opt)  # step 2: grad=4.8, v=0.9*0.6+0.1*4.8=1.02, w=2.4-1.02=1.38
         assert w.v == pytest.approx(1.38)
 
     def test_momentum_overshoots_plain_gd(self):
