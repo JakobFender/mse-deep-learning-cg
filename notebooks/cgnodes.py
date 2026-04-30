@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from typing import Optional
 
@@ -45,10 +46,7 @@ class CompGraph:
                 input count.
         """
         if len(input_values) != len(self.in_nodes):
-            raise Exception(
-                "Can't forward: number of input differs to number "
-                "of input nodes"
-            )
+            raise Exception("Can't forward: number of input differs to number of input nodes")
         for i, in_node in enumerate(self.in_nodes):
             in_node.receive_parent_value(input_values[i])
             in_node.forward()
@@ -174,9 +172,7 @@ class ValueNode(MetaNode):
             Exception: If value is missing when forward is requested.
         """
         if self.v is None:
-            raise Exception(
-                "Forward not possible as no value set in this ValueNode"
-            )
+            raise Exception("Forward not possible as no value set in this ValueNode")
         for node in self.children:
             node.receive_parent_value(self.v)
             node.forward()
@@ -229,9 +225,7 @@ class MultiplyNode(MetaNode):
         """
         del v  # value is read from parents[].v in forward/backward
         if self._received_count >= 2:
-            raise Exception(
-                "This node accepts 2 inputs that are already filled"
-            )
+            raise Exception("This node accepts 2 inputs that are already filled")
         self._received_count += 1
         if self._received_count == 2:
             self.input_ready = True
@@ -283,7 +277,7 @@ class AddNode(MetaNode):
         if len(self.inputs) == len(self.parents):
             self.input_ready = True
         elif len(self.inputs) > len(self.parents):
-            raise Exception('All inputs are already set')
+            raise Exception("All inputs are already set")
 
     def reset_values(self):
         """Clear cached addends and recursively reset descendants."""
@@ -353,9 +347,10 @@ class SquareNode(MetaNode):
 
 
 # ######  TO DO  #########
-    # class MSELossNode(MetaNode):
-    # Advice: mimic the MultiplyNode and adapt the forward() and
-    # backward() methods
+# class MSELossNode(MetaNode):
+# Advice: mimic the MultiplyNode and adapt the forward() and
+# backward() methods
+
 
 class MSELossNode(MetaNode):
     """A mean squared error loss node: J = 0.5 * (y_hat - y) ** 2.
@@ -392,9 +387,7 @@ class MSELossNode(MetaNode):
         """
         del v  # value is read from parents[].v in forward/backward
         if self._received_count >= 2:
-            raise Exception(
-                "This node accepts 2 inputs that are already filled"
-            )
+            raise Exception("This node accepts 2 inputs that are already filled")
         self._received_count += 1
         if self._received_count == 2:
             self.input_ready = True
@@ -410,7 +403,7 @@ class MSELossNode(MetaNode):
         """Compute loss and push it to children once both inputs are ready."""
         if self.input_ready:
             y_hat_val, y_val = self.get_parent_values()
-            z = (0.5) * ((y_hat_val - y_val) ** 2)      # 0.5 because N=1
+            z = (0.5) * ((y_hat_val - y_val) ** 2)  # 0.5 because N=1
             for node in self.children:
                 node.receive_parent_value(z)
                 node.forward()
