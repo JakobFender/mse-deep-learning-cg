@@ -24,7 +24,7 @@ class GradientDescent(AbstractOptimizer):
                 return
             visited.add(id(node))
 
-            self.velocity[node] = self.momentum * self.velocity.get(node, 0.0) + node.grad_v
+            self.velocity[node] = self.momentum * self.velocity.get(node, 0.0) + self.learning_rate * node.grad_v
             node.v -= self.learning_rate * self.velocity[node]
 
             for child in node.children:

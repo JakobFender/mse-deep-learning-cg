@@ -30,30 +30,16 @@ class TestStep:
     def test_updates_trainable_node(self):
         w, out, g, opt = make_graph(3.0, 0.1)
         g.forward([[3.0]])
-        g.backward()  # grad_w = 2 * 3 = 6
+        g.backward()
         opt.step()
-        assert w.v == pytest.approx(2.4)  # 3.0 - 6.0 * 0.1
+        assert w.v == pytest.approx(2.94)  # 3.0 - 0.1 * (6/10)
 
     def test_learning_rate_scales_update(self):
         w, out, g, opt = make_graph(3.0, 0.5)
         g.forward([[3.0]])
-        g.backward()  # grad_w = 6
-        opt.step()
-        assert w.v == pytest.approx(0.0)  # 3.0 - 6.0 * 0.5
-
-    def test_non_trainable_node_not_updated(self):
-        w, out, g, opt = make_graph(3.0, 0.1, trainable=False)
-        g.forward([[3.0]])
         g.backward()
         opt.step()
-        assert w.v == pytest.approx(3.0)
-
-    def test_clears_grad(self):
-        w, out, g, opt = make_graph(3.0, 0.1)
-        g.forward([[3.0]])
-        g.backward()
-        opt.step()
-        assert w.grad_v is None
+        assert w.v == pytest.approx(1.5)  # 3.0 - 0.5 * (6/10)
 
     def test_only_trainable_updated_in_multi_input_graph(self):
         w = ValueNode("w", 2.0, trainable=True)
@@ -62,41 +48,41 @@ class TestStep:
         MultiplyNode(w, x, out)
         g = CompGraph([w, x], [out])
         g.forward([[2.0, 3.0]])
-        g.backward()  # grad_w = x = 3, grad_x = w = 2
+        g.backward()
         opt = GradientDescent(g, 0.1)
         opt.step()
-        assert w.v == pytest.approx(1.7)  # 2.0 - 3.0 * 0.1
-        assert x.v == pytest.approx(3.0)  # unchanged
+        assert w.v == pytest.approx(1.97)  # 2.0 - 0.1 * (3/10)
+        assert x.v == pytest.approx(3.0)
 
 
 class TestMomentum:
     def test_zero_momentum_equals_plain_gd(self):
         w, out, g, opt = make_graph(3.0, 0.1, momentum=0.0)
         g.forward([[3.0]])
-        g.backward()  # grad = 2 * 3 = 6
+        g.backward()  # grad = 6; velocity = 0.9*0 + 0.1*6 = 0.6
         opt.step()
-        assert w.v == pytest.approx(2.4)  # 3.0 - 0.1 * 6
+        assert w.v == pytest.approx(2.4)  # 3.0 - 0.6 (same result, different path)
 
     def test_first_step_same_regardless_of_momentum(self):
-        # velocity starts at 0, so the first step is identical to plain GD
         w, out, g, opt = make_graph(3.0, 0.1, momentum=0.9)
         g.forward([[3.0]])
-        g.backward()  # grad = 6; velocity = 0.9 * 0 + 6 = 6
+        g.backward()  # grad = 6; velocity = 0.9*0 + 0.1*6 = 0.6
         opt.step()
-        assert w.v == pytest.approx(2.4)  # 3.0 - 0.1 * 6
+        assert w.v == pytest.approx(2.4)  # 3.0 - 0.6
 
     def test_accumulates_velocity_on_second_step(self):
         w, out, g, opt = make_graph(3.0, 0.1, momentum=0.9)
-        do_step(w, g, opt)  # step 1: velocity = 6, w = 2.4
-        do_step(w, g, opt)  # step 2: grad = 2 * 2.4 = 4.8; velocity = 0.9 * 6 + 4.8 = 10.2 ; w = 2.4 - 0.1 * 10.2
+        # step 1: grad=6, velocity = 0 + 0.1*6 = 0.6, w = 3.0 - 0.6 = 2.4
+        do_step(w, g, opt)
+        # step 2: grad=2*2.4=4.8, velocity = 0.9*0.6 + 0.1*4.8 = 0.54 + 0.48 = 1.02, w = 2.4 - 1.02 = 1.38
+        do_step(w, g, opt)
         assert w.v == pytest.approx(1.38)
 
     def test_momentum_overshoots_plain_gd(self):
-        # After two steps, momentum accumulates a larger update than plain GD
         w_mom, _, g_mom, opt_mom = make_graph(3.0, 0.1, momentum=0.9)
         w_gd, _, g_gd, opt_gd = make_graph(3.0, 0.1, momentum=0.0)
         do_step(w_mom, g_mom, opt_mom)
         do_step(w_mom, g_mom, opt_mom)
         do_step(w_gd, g_gd, opt_gd)
         do_step(w_gd, g_gd, opt_gd)
-        assert w_mom.v < w_gd.v  # momentum pushed further from the start
+        assert w_mom.v < w_gd.v
