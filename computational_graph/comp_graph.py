@@ -75,7 +75,7 @@ class CompGraph:
         if not self.forwarded:
             raise RuntimeError("Can't backward, you need to call forward first")
         for node in self.out_nodes:
-            node.backward(1.0)
+            node.backward(1.0, batch_size)
 
     def reset_values(self):
         """Reset all cached values recursively so a new pass can be run.
