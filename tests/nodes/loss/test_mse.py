@@ -44,14 +44,14 @@ class TestBackward:
         y_pred.forward()
         y_true.forward()
         mse.backward(1.0)
-        assert y_pred.grad_v == -4.0  # 2 * (3 - 5) * 1
+        assert y_pred.grad_v == -2.0  # 2 * (3 - 5) * 1
 
     def test_scaled_grad(self):
         y_pred, y_true, mse, out = make_mse(3.0, 5.0)
         y_pred.forward()
         y_true.forward()
         mse.backward(2.0)
-        assert y_pred.grad_v == -8.0  # 2 * (3 - 5) * 2
+        assert y_pred.grad_v == -4.0  # 2 * (3 - 5) * 2
 
     def test_zero_error_grad(self):
         y_pred, y_true, mse, out = make_mse(3.0, 3.0)

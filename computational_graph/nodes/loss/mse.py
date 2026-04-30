@@ -82,7 +82,7 @@ class MSENode(MetaNode):
 
             batch_size (int): Batch size to scale gradient"""
         y_pred, y_true = self.get_parent_values()
-        grad_x = 2 * (y_pred - y_true) * grad_z
+        grad_x = (y_pred - y_true) * grad_z
         self.parents[0].backward(grad_x, batch_size)
 
     def __repr__(self) -> str:
