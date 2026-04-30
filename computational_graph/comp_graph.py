@@ -59,6 +59,8 @@ class CompGraph:
         for sample in input_values:
             if len(sample) != len(self.in_nodes):
                 raise ValueError("Can't forward: number of input differs to number of input nodes")
+
+            self.reset_values()
             for i, in_node in enumerate(self.in_nodes):
                 in_node.receive_parent_value(sample[i])
                 in_node.forward()
